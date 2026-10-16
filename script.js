@@ -1,179 +1,184 @@
-function gerarCodigo() {
-    const tipo = document.getElementById("tipoProjeto").value;
-    const linguagem = document.getElementById("linguagem").value;
-    const login = document.getElementById("login").checked;
-    const banco = document.getElementById("banco").checked;
-    const promptLivre = document.getElementById("promptLivre").value;
-    const crud = document.getElementById("crud").checked;
-    let codigo = "";
+/**
+ * Classificador de Nível de Herói
+ * Arquitetura baseada em Modulos ES6/Clean Code.
+ */
 
-    // Verificar se há um prompt livre
-    if (promptLivre.trim() !== "") {
-        codigo += `// Código gerado com base no pedido:\n`;
-        codigo += `// "${promptLivre}"\n\n`;
+"use strict";
 
-        if (promptLivre.toLowerCase().includes("api")) {
-            codigo += `const express = require('express');\nconst app = express();\napp.use(express.json());\n\napp.get('/', (req,res)=> res.send('API OK'));\n\napp.listen(3000);`;
-        }
-        else if (promptLivre.toLowerCase().includes("site")) {
-            codigo += `<!DOCTYPE html>\n<html>\n<body>\n<h1>Site gerado</h1>\n</body>\n</html>`;
-        }
-        else if (promptLivre.toLowerCase().includes("login")) {
-            codigo += `function login(user, pass) {\n  if(user === 'admin') return 'OK';\n}`;
-        }
-        else {
-            codigo += `// Estrutura base\nconsole.log('Projeto criado');`;
-        }
+/* ==========================================================================
+   1. CONFIGURAÇÃO DAS PATENTES / RANKS (REGRAS DE NEGÓCIO)
+   ========================================================================== */
+const RANKS = [
+    { name: "Ferro",      minXP: 0,     maxXP: 1000,    color: "var(--rank-ferro)" },
+    { name: "Bronze",     minXP: 1001,  maxXP: 2000,    color: "var(--rank-bronze)" },
+    { name: "Prata",      minXP: 2001,  maxXP: 5000,    color: "var(--rank-prata)" },
+    { name: "Ouro",       minXP: 5001,  maxXP: 7000,    color: "var(--rank-ouro)" },
+    { name: "Platina",    minXP: 7001,  maxXP: 8000,    color: "var(--rank-platina)" },
+    { name: "Ascendente", minXP: 8001,  maxXP: 9000,    color: "var(--rank-ascendente)" },
+    { name: "Imortal",    minXP: 9001,  maxXP: 10000,   color: "var(--rank-imortal)" },
+    { name: "Radiante",   minXP: 10001, maxXP: Infinity, color: "var(--rank-radiante)" }
+];
 
-        document.getElementById("resultado").value = codigo;
-        return;
-    }
+/* ==========================================================================
+   2. LÓGICA PURA DE CLASSIFICAÇÃO
+   ========================================================================== */
 
-    // Gerar código baseado no tipo de projeto
-    if (tipo === "site") {
-        switch (linguagem) {
-            case "javascript":
-                codigo += `<!DOCTYPE html>\n<html>\n<head>\n  <title>Meu Site</title>\n  <style>\n    body { font-family: Arial; margin: 20px; }\n  </style>\n</head>\n<body>\n  <h1>Bem-vindo</h1>\n  <p>Seu site foi criado com sucesso</p>\n</body>\n</html>`;
-                break;
-            case "python":
-                codigo += `# Site com Flask\nfrom flask import Flask\napp = Flask(__name__)\n\n@app.route('/')\ndef home():\n    return '<h1>Bem-vindo</h1>'\n\napp.run()`;
-                break;
-            case "php":
-                codigo += `<?php\necho '<h1>Bem-vindo</h1>';\necho '<p>Seu site foi criado com sucesso</p>';\n?>`;
-                break;
-            default:
-                codigo += `<!DOCTYPE html>\n<html>\n<body>\n  <h1>Site genérico</h1>\n</body>\n</html>`;
-        }
-    }
-
-    if (tipo === "api") {
-        switch (linguagem) {
-            case "javascript":
-                codigo += `// API com Node.js\nconst express = require('express');\nconst app = express();\n\napp.use(express.json());\n\napp.get('/', (req, res) => {\n    res.send('API rodando');\n});\n`;
-                if (crud) {
-                    codigo += `\nlet dados = [];\n\napp.get('/dados', (req,res)=> res.json(dados));\napp.post('/dados', (req,res)=> { dados.push(req.body); res.send('Criado'); });\napp.put('/dados/:id', (req,res)=> { dados[req.params.id]=req.body; res.send('Atualizado'); });\napp.delete('/dados/:id', (req,res)=> { dados.splice(req.params.id,1); res.send('Deletado'); });\n`;
-                }
-                codigo += `\napp.listen(3000);`;
-                break;
-            case "python":
-                codigo += `# API com Flask\nfrom flask import Flask, request, jsonify\napp = Flask(__name__)\n\n@app.route('/')\ndef api():\n    return jsonify({'status': 'API rodando'})\n`;
-                if (crud) {
-                    codigo += `\ndados = []\n\n@app.route('/dados', methods=['GET'])\ndef get_dados():\n    return jsonify(dados)\n\n@app.route('/dados', methods=['POST'])\ndef criar_dados():\n    dados.append(request.json)\n    return jsonify({'status': 'Criado'})\n\n@app.route('/dados/<int:id>', methods=['PUT'])\ndef atualizar_dados(id):\n    dados[id] = request.json\n    return jsonify({'status': 'Atualizado'})\n\n@app.route('/dados/<int:id>', methods=['DELETE'])\ndef deletar_dados(id):\n    dados.pop(id)\n    return jsonify({'status': 'Deletado'})\n`;
-                }
-                codigo += `\napp.run()`;
-                break;
-            case "java":
-                codigo += `// API em Java (Spring Boot)\n@RestController\npublic class ApiController {\n    @GetMapping("/")\n    public String home() {\n        return "API rodando";\n    }\n}`;
-                break;
-            case "csharp":
-                codigo += `// API em C# (.NET)\nvar app = WebApplication.CreateBuilder().Build();\n\napp.MapGet("/", () => "API rodando");\n\napp.Run();`;
-                break;
-            case "php":
-                codigo += `<?php\nheader('Content-Type: application/json');\n\nif ($_SERVER['REQUEST_METHOD'] === 'GET') {\n    echo json_encode(['status' => 'API rodando']);\n}\n?>`;
-                break;
-            case "go":
-                codigo += `package main\n\nimport (\n    "fmt"\n    "net/http"\n)\n\nfunc handler(w http.ResponseWriter, r *http.Request) {\n    fmt.Fprintf(w, "API rodando")\n}\n\nfunc main() {\n    http.HandleFunc("/", handler)\n    http.ListenAndServe(":3000", nil)\n}`;
-                break;
-            case "ruby":
-                codigo += `require 'sinatra'\n\nget '/' do\n  'API rodando'\nend`;
-                break;
-        }
-    }
-
-    if (tipo === "app") {
-        switch (linguagem) {
-            case "javascript":
-                codigo += `// App React Native\nimport React from 'react';\nimport { Text, View } from 'react-native';\n\nexport default function App() {\n  return (\n    <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>\n      <Text>Meu App</Text>\n    </View>\n  );\n}`;
-                break;
-            case "java":
-                codigo += `// App Android (Java)\npublic class MainActivity extends AppCompatActivity {\n  @Override\n  protected void onCreate(Bundle savedInstanceState) {\n    super.onCreate(savedInstanceState);\n    setContentView(R.layout.activity_main);\n  }\n}`;
-                break;
-            case "csharp":
-                codigo += `// App com .NET MAUI\npublic partial class App : Application {\n  public App() {\n    InitializeComponent();\n    MainPage = new AppShell();\n  }\n}`;
-                break;
-            case "python":
-                codigo += `# App com Kivy\nfrom kivy.app import App\nfrom kivy.uix.label import Label\nfrom kivy.uix.boxlayout import BoxLayout\n\nclass MeuApp(App):\n    def build(self):\n        layout = BoxLayout()\n        layout.add_widget(Label(text='App rodando'))\n        return layout\n\nMeuApp().run()`;
-                break;
-            default:
-                codigo += `// App básico`;
-        }
-    }
-
-    if (login) {
-        codigo += `\n\n// Sistema de Login\nfunction login(usuario, senha) {\n  if (usuario && senha) {\n    console.log('Login realizado: ' + usuario);\n    return true;\n  }\n  return false;\n}`;
-    }
-
-    if (banco) {
-        codigo += `\n\n// Conexão com Banco de Dados\nconst db = {\n  conectar: function() {\n    console.log('Banco conectado');\n  },\n  query: function(sql) {\n    console.log('Executando: ' + sql);\n  }\n};`;
-    }
-
-    document.getElementById("resultado").value = codigo;
+/**
+ * Retorna o objeto completo da patente correspondente ao XP informado.
+ * @param {number} xp - Quantidade de pontos de experiência do herói.
+ * @returns {Object} Dados da patente (nome, minXP, maxXP, cor).
+ */
+function obterPatentePorXP(xp) {
+    const patenteEncontrada = RANKS.find(rank => xp >= rank.minXP && xp <= rank.maxXP);
+    // Caso caia em um valor fora do esperado, retorna a última patente por segurança
+    return patenteEncontrada || RANKS[RANKS.length - 1];
 }
 
-function copiarCodigo() {
-    const textarea = document.getElementById("resultado");
-    textarea.select();
-    document.execCommand("copy");
-    alert("Código copiado para a área de transferência!");
+/**
+ * Calcula a porcentagem de progresso em direção à próxima patente.
+ * @param {number} xp - XP atual do herói.
+ * @param {Object} rankAtual - Objeto da patente atual.
+ * @returns {number} Porcentagem entre 0 e 100.
+ */
+function calcularProgressoProximoElo(xp, rankAtual) {
+    if (rankAtual.maxXP === Infinity) return 100; // Rank máximo já atingido
+
+    const xpNoNivelAtual = xp - rankAtual.minXP;
+    const xpNecessarioNoNivel = rankAtual.maxXP - rankAtual.minXP;
+    const porcentagem = (xpNoNivelAtual / xpNecessarioNoNivel) * 100;
+
+    return Math.min(Math.max(Math.round(porcentagem), 0), 100);
 }
 
-function baixarCodigo() {
-    const codigo = document.getElementById("resultado").value;
-    const linguagem = document.getElementById("linguagem").value;
-    
-    let nomeArquivo = "codigo.";
-    
-    switch (linguagem) {
-        case "javascript":
-            nomeArquivo += "js";
-            break;
-        case "python":
-            nomeArquivo += "py";
-            break;
-        case "java":
-            nomeArquivo += "java";
-            break;
-        case "csharp":
-            nomeArquivo += "cs";
-            break;
-        case "php":
-            nomeArquivo += "php";
-            break;
-        case "ruby":
-            nomeArquivo += "rb";
-            break;
-        case "go":
-            nomeArquivo += "go";
-            break;
-        default:
-            nomeArquivo += "txt";
+/* ==========================================================================
+   3. MANIPULAÇÃO DA INTERFACE (DOM CONTROLLER)
+   ========================================================================== */
+class HeroAppUI {
+    constructor() {
+        // Elementos do Formulário
+        this.form = document.getElementById("heroForm");
+        this.inputName = document.getElementById("heroName");
+        this.inputXP = document.getElementById("heroXP");
+        this.btnReset = document.getElementById("btnReset");
+
+        // Elementos de Erro
+        this.nameError = document.getElementById("nameError");
+        this.xpError = document.getElementById("xpError");
+
+        // Elementos do Card de Resultado
+        this.resultCard = document.getElementById("resultCard");
+        this.rankBadge = document.getElementById("rankBadge");
+        this.resultHeroName = document.getElementById("resultHeroName");
+        this.resultHeroXP = document.getElementById("resultHeroXP");
+        this.resultMessage = document.getElementById("resultMessage");
+        this.progressBar = document.getElementById("progressBar");
+        this.progressText = document.getElementById("progressText");
+
+        this.initEvents();
     }
-    
-    const elemento = document.createElement("a");
-    elemento.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(codigo));
-    elemento.setAttribute("download", nomeArquivo);
-    elemento.style.display = "none";
-    document.body.appendChild(elemento);
-    elemento.click();
-    document.body.removeChild(elemento);
+
+    /**
+     * Vincula os escutadores de eventos aos elementos da página.
+     */
+    initEvents() {
+        this.form.addEventListener("submit", (e) => this.handleSubmit(e));
+        this.btnReset.addEventListener("click", () => this.resetForm());
+
+        // Limpa mensagens de erro conforme o usuário digita
+        this.inputName.addEventListener("input", () => this.clearError(this.nameError));
+        this.inputXP.addEventListener("input", () => this.clearError(this.xpError));
+    }
+
+    /**
+     * Trata o envio do formulário, realizando a validação e exibindo o veredito.
+     * @param {Event} event 
+     */
+    handleSubmit(event) {
+        event.preventDefault();
+
+        const nome = this.inputName.value.trim();
+        const xp = parseInt(this.inputXP.value, 10);
+
+        if (!this.validarFormulario(nome, xp)) {
+            return;
+        }
+
+        // Executa a regra de classificação
+        const patente = obterPatentePorXP(xp);
+        const progresso = calcularProgressoProximoElo(xp, patente);
+
+        // Atualiza e exibe os resultados na UI
+        this.renderizarResultado(nome, xp, patente, progresso);
+    }
+
+    /**
+     * Valida os campos de entrada do usuário.
+     * @param {string} nome 
+     * @param {number} xp 
+     * @returns {boolean}
+     */
+    validarFormulario(nome, xp) {
+        let isValid = true;
+
+        if (!nome) {
+            this.showError(this.nameError, "Por favor, informe o nome do herói.");
+            isValid = false;
+        }
+
+        if (isNaN(xp) || xp < 0) {
+            this.showError(this.xpError, "Insira um valor de XP válido (maior ou igual a 0).");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    showError(element, message) {
+        element.textContent = message;
+    }
+
+    clearError(element) {
+        element.textContent = "";
+    }
+
+    /**
+     * Renderiza o resultado formatado no card principal.
+     */
+    renderizarResultado(nome, xp, patente, progresso) {
+        this.resultHeroName.textContent = nome;
+        this.resultHeroXP.textContent = xp.toLocaleString("pt-BR");
+        
+        // Atualiza a badge da patente
+        this.rankBadge.textContent = patente.name;
+        this.rankBadge.style.backgroundColor = patente.color;
+        this.rankBadge.style.color = (patente.name === "Prata" || patente.name === "Ferro") ? "#0f172a" : "#ffffff";
+
+        // Mensagem oficial exigida no desafio da lógica
+        this.resultMessage.innerHTML = `O Herói de nome <strong>${nome}</strong> está no nível de <strong style="color: ${patente.color}">${patente.name}</strong>.`;
+
+        // Barra de progresso
+        this.progressBar.style.width = `${progresso}%`;
+        this.progressBar.style.backgroundColor = patente.color;
+        this.progressText.textContent = `${progresso}%`;
+
+        // Exibe o card caso esteja oculto
+        this.resultCard.classList.remove("hidden");
+    }
+
+    /**
+     * Reseta o formulário e oculta o card de resultado.
+     */
+    resetForm() {
+        this.form.reset();
+        this.clearError(this.nameError);
+        this.clearError(this.xpError);
+        this.resultCard.classList.add("hidden");
+    }
 }
 
-
-    document.getElementById("resultado").value = codigo
-
-
-function copiarCodigo() {
-    const textarea = document.getElementById("resultado");
-    textarea.select();
-    document.execCommand("copy");
-    alert("Código copiado!");
-}
-function baixarCodigo() {
-    const texto = document.getElementById("resultado").value;
-    const blob = new Blob([texto], { type: 'text/plain' });
-    const link = document.createElement('a');
-
-    link.href = URL.createObjectURL(blob);
-    link.download = 'codigo.txt';
-    link.click();
-}
+/* ==========================================================================
+   4. INICIALIZAÇÃO DA APLICAÇÃO
+   ========================================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+    new HeroAppUI();
+});
