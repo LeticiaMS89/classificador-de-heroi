@@ -70,7 +70,7 @@ Não é necessária a instalação de dependências externas ou servidores compl
 
 1. Clone este repositório:
 ```bash
-git clone [https://github.com/seu-usuario/classificador-de-heroi.git](https://github.com/seu-usuario/classificador-de-heroi.git)
+git clone (https://github.com/LeticiaMS89/classificador-de-heroi.git)
 ```
 
 2. Acesse a pasta do projeto:
