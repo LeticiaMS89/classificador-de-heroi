@@ -4,53 +4,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Generator</title>
+    <meta name="description" content="Aplicação para classificação de nível de heróis com base em pontos de experiência (XP).">
+    <title>Classificador de Herói | Guilda dos Heróis</title>
+    
+    <!-- Fontes Google: Inter (UI) e Rajdhani (Estilo RPG / Gaming) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="app-container">
+        <!-- Cabeçalho Principal -->
+        <header class="app-header">
+            <span class="badge-tag">Módulo de Avaliação</span>
+            <h1 class="app-title">Classificador de Heróis</h1>
+            <p class="app-subtitle">Insira o nome e os pontos de experiência (XP) do aventureiro para determinar a patente oficial.</p>
+        </header>
 
-    <div class="container">
-        <h1>Code Generator</h1>
+        <main class="app-main">
+            <!-- Formulário de Cadastro do Herói -->
+            <form id="heroForm" class="hero-form" novalidate>
+                <div class="form-grid">
+                    <!-- Nome do Herói -->
+                    <div class="form-group">
+                        <label for="heroName" class="form-label">Nome do Herói / Aventureiro</label>
+                        <input 
+                            type="text" 
+                            id="heroName" 
+                            name="heroName" 
+                            class="form-control" 
+                            placeholder="Ex: Arthuria Pendragon, Geralt..."
+                            required 
+                            autocomplete="off">
+                        <span class="error-message" id="nameError"></span>
+                    </div>
 
-        <label>Tipo de Projeto:</label>
-        <select id="tipoProjeto">
-            <option value="site">Site</option>
-            <option value="api">API</option>
-            <option value="app">App Mobile</option>
-        </select>
+                    <!-- Experiência (XP) -->
+                    <div class="form-group">
+                        <label for="heroXP" class="form-label">Quantidade de XP (Experiência)</label>
+                        <input 
+                            type="number" 
+                            id="heroXP" 
+                            name="heroXP" 
+                            class="form-control" 
+                            placeholder="Ex: 7500" 
+                            min="0" 
+                            step="1" 
+                            required>
+                        <span class="error-message" id="xpError"></span>
+                    </div>
+                </div>
 
-        <label>Linguagem:</label>
-        <select id="linguagem">
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-            <option value="java">Java</option>
-            <option value="csharp">C#</option>
-            <option value="php">PHP</option>
-            <option value="ruby">Ruby</option>
-            <option value="go">Go</option>
-        </select>
-        <label>
-            <input type="checkbox" id="login"> Sistema de Login
-        </label>
+                <!-- Botões de Ação -->
+                <div class="form-actions">
+                    <button type="submit" id="btnClassificar" class="btn btn-primary">
+                        <span>Classificar Herói</span>
+                    </button>
+                    <button type="button" id="btnReset" class="btn btn-secondary">
+                        <span>Limpar</span>
+                    </button>
+                </div>
+            </form>
 
-        <label>
-            <input type="checkbox" id="banco"> Banco de Dados
-        </label>
+            <!-- Card de Exibição do Resultado (Oculto até haver cálculo) -->
+            <section id="resultCard" class="result-card hidden" aria-live="polite">
+                <div class="result-header">
+                    <span class="result-label">Patente Confirmada</span>
+                    <span id="rankBadge" class="rank-badge">Ferro</span>
+                </div>
 
-        <label><input type="checkbox" id="crud"> CRUD Completo</label>
-        <label>Descreva o que você quer gerar:</label>
-        <textarea id="promptLivre" placeholder="Ex: API em Node com login e JWT..."></textarea>
-        <button onclick="gerarCodigo()">Gerar Código</button>
+                <div class="result-body">
+                    <div class="hero-info">
+                        <h2 id="resultHeroName" class="hero-name-display">-</h2>
+                        <p class="hero-xp-display">XP Atual: <strong id="resultHeroXP">0</strong></p>
+                    </div>
 
-        <h2>Código Gerado:</h2>
-        <textarea id="resultado" readonly></textarea>
+                    <!-- Mensagem do Veredito Oficial -->
+                    <p id="resultMessage" class="result-message"></p>
 
-        <button onclick="copiarCodigo()">Copiar</button>
-        <button onclick="baixarCodigo()">Download</button>
+                    <!-- Barra de Progresso para o Próximo Elo -->
+                    <div class="progress-wrapper">
+                        <div class="progress-info">
+                            <span>Progresso para o próximo Elo</span>
+                            <span id="progressText">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="progressBar" class="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 
 </html>
